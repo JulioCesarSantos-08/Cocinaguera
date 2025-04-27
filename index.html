@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tomar Pedido - Cocina de la Güera</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase versión de compatibilidad -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <!-- Tu script personalizado -->
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+<h1>Tomar Pedido</h1>
+
+<form id="pedidoForm">
+  
+  <!-- Selector de Empleado -->
+  <label for="empleado">Empleado que toma el pedido:</label><br>
+  <select id="empleado" required>
+    <option value="">Selecciona tu nombre</option>
+    <option value="Ana">Ana</option>
+    <option value="Carlos">Carlos</option>
+    <option value="María">María</option>
+    <option value="Luis">Luis</option>
+  </select><br><br>
+
+  <!-- Número de Mesa -->
+  <input type="text" id="mesa" placeholder="Nombre del cliente" required><br><br>
+
+  <!-- Selector de Platillos -->
+  <label for="platillo">Selecciona el platillo:</label><br>
+  <select id="platillo" required>
+    <option value="">Selecciona un platillo</option>
+    <option value="Enchiladas $15">Enchiladas - $15</option>
+    <option value="Tacos Dorados $15">Tacos Dorados - $15</option>
+    <option value="Quesadillas $12">Quesadillas - $12</option>
+    <option value="Torta $20">Torta - $20</option>
+  </select><br><br>
+
+  <!-- Detalles extra si es necesario -->
+  <textarea id="pedidoExtra" placeholder="Detalles adicionales (opcional)"></textarea><br><br>
+
+  <button type="submit">Enviar Pedido</button>
+</form>
+
+<!-- Botón flotante para regresar al menú -->
+<div class="boton-flotante">
+  <button onclick="window.location.href='menu.html'">🏠 Menú Principal</button>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Comprobar sesión
+    if (localStorage.getItem('logueado') !== 'true') {
+      window.location.href = 'login.html';
+    }
+
+    iniciarFirebase(); // Conectar a Firebase
+
+    const pedidoForm = document.getElementById('pedidoForm');
+
+    pedidoForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const empleado = document.getElementById('empleado').value.trim();
+      const mesa = document.getElementById('mesa').value.trim();
+      const platillo = document.getElementById('platillo').value.trim();
+      const pedidoExtra = document.getElementById('pedidoExtra').value.trim();
+
+      if (empleado && mesa && platillo) {
+        const pedidoCompleto = `Empleado: ${empleado} | ${platillo}${pedidoExtra ? ' | ' + pedidoExtra : ''}`;
+        
+        await guardarPedido(mesa, pedidoCompleto);
+        pedidoForm.reset(); // Limpiar el formulario
+        alert('Pedido enviado ✅');
+      } else {
+        alert('Por favor completa todos los campos obligatorios.');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

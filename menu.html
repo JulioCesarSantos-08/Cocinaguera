@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menú Principal - Cocina de la Güera</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="menu-container">
+  <h1>Menú Principal</h1>
+  <button onclick="irAPagina('index.html')">🍽️ Realizar Pedido</button><br><br>
+  <button onclick="irAPagina('cocina.html')">👨‍🍳 Ver Pedidos en Cocina</button><br><br>
+  <button onclick="irAPagina('pedidos-terminados.html')">📈 Ventas de Hoy</button><br><br>
+  <button onclick="cerrarSesion()">🔒 Cerrar Sesión</button>
+</div>
+
+<script>
+  // Comprobar si está logueado
+  if (localStorage.getItem('logueado') !== 'true') {
+    window.location.href = 'login.html'; // Si no está logueado, regresar al login
+  }
+
+  function irAPagina(pagina) {
+    window.location.href = pagina;
+  }
+
+  function cerrarSesion() {
+    localStorage.removeItem('logueado'); // Eliminar la sesión
+    window.location.href = 'login.html'; // Regresar al login
+  }
+</script>
+
+</body>
+</html>

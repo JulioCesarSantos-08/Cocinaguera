@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ventas del Día - Cocina de la Güera</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase versión de compatibilidad -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <!-- Tu script personalizado -->
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+<h1>Ventas del Día</h1>
+
+<div id="listaVentas"></div>
+
+<h2 id="totalVenta">Total: $0</h2>
+
+<!-- Botón para eliminar todas las ventas -->
+<button onclick="eliminarTodasLasVentas()" class="eliminar-todo">🗑️ Eliminar Todo</button>
+
+<!-- Botón flotante para regresar al menú -->
+<div class="boton-flotante">
+  <button onclick="window.location.href='menu.html'">🏠 Menú Principal</button>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Verificar sesión iniciada
+    if (localStorage.getItem('logueado') !== 'true') {
+      window.location.href = 'login.html';
+    }
+
+    iniciarFirebase();
+    const listaVentas = document.getElementById('listaVentas');
+    const totalVenta = document.getElementById('totalVenta');
+    const db = firebase.firestore();
+
+    db.collection("pedidos_terminados").orderBy("timestamp").onSnapshot((querySnapshot) => {
+      listaVentas.innerHTML = "";
+      let total = 0;
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const div = document.createElement('div');
+        div.classList.add('venta');
+
+        div.innerHTML = `
+          <p><strong>Mesa:</strong> ${data.mesa}</p>
+          <p><strong>Pedido:</strong> ${data.pedido}</p>
+          <p><strong>Precio:</strong> $${data.precio.toFixed(2)}</p>
+          <hr>
+        `;
+        listaVentas.appendChild(div);
+
+        total += data.precio;
+      });
+
+      totalVenta.textContent = `Total: $${total.toFixed(2)}`;
+    });
+  });
+
+  // Función para eliminar todas las ventas
+  async function eliminarTodasLasVentas() {
+    if (!confirm('¿Estás seguro que deseas eliminar todas las ventas? ❌')) return;
+
+    const db = firebase.firestore();
+    const snapshot = await db.collection('pedidos_terminados').get();
+
+    const batch = db.batch();
+
+    snapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+
+    await batch.commit();
+    alert('Todas las ventas fueron eliminadas.');
+  }
+</script>
+
+</body>
+</html>
