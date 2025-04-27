@@ -14,45 +14,44 @@ function iniciarFirebase() {
   }
 }
 
-// Función para guardar un pedido
-async function guardarPedido(mesa, pedido) {
+// Guardar el pedido en Firebase
+async function guardarPedido(mesa, pedido, total) {
   const db = firebase.firestore();
+  const snapshot = await db.collection("pedidos").get();
+  const numeroPedido = snapshot.size + 1; // contar pedidos y sumar 1
+
   await db.collection("pedidos").add({
+    numeroPedido: numeroPedido,
     mesa: mesa,
     pedido: pedido,
+    total: total,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   });
 }
 
-// Función para marcar un pedido como listo y moverlo a pedidos terminados
+// Función para marcar pedido como terminado
 async function marcarComoListo(id) {
   const db = firebase.firestore();
   const pedidoDoc = await db.collection("pedidos").doc(id).get();
 
   if (pedidoDoc.exists) {
     const data = pedidoDoc.data();
-    const precio = prompt("💵 Ingresa el precio del pedido:", "0");
+    await db.collection("pedidos_terminados").add({
+      numeroPedido: data.numeroPedido,
+      mesa: data.mesa,
+      pedido: data.pedido,
+      total: data.total,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
 
-    if (precio !== null && !isNaN(precio) && precio !== "") {
-      await db.collection("pedidos_terminados").add({
-        mesa: data.mesa,
-        pedido: data.pedido,
-        precio: parseFloat(precio),
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      // Ahora sí borrar de pedidos activos
-      await db.collection("pedidos").doc(id).delete();
-      alert('✅ Pedido marcado como terminado');
-    } else {
-      alert('❌ Precio inválido. No se completó la operación.');
-    }
+    await db.collection("pedidos").doc(id).delete();
+    alert('✅ Pedido marcado como terminado');
   } else {
     alert('❌ Pedido no encontrado.');
   }
 }
 
-// Función para eliminar todas las ventas terminadas
+// Eliminar todas las ventas
 async function eliminarTodasLasVentas() {
   if (!confirm('¿Estás seguro que deseas eliminar TODAS las ventas? Esta acción no se puede deshacer. ❗')) {
     return;
@@ -70,7 +69,7 @@ async function eliminarTodasLasVentas() {
   alert('🗑️ Todas las ventas fueron eliminadas.');
 }
 
-// Función de login
+// Login
 function login(event) {
   event.preventDefault();
 
@@ -85,15 +84,125 @@ function login(event) {
   }
 }
 
-// Función de logout (cerrar sesión)
+// Logout
 function logout() {
   localStorage.removeItem('logueado');
   window.location.href = 'login.html';
 }
 
-// Verificar que esté logueado al entrar a páginas protegidas
+// Verificar login
 function verificarLogin() {
   if (localStorage.getItem('logueado') !== 'true') {
     window.location.href = 'login.html';
   }
+}
+
+// Función para calcular y preparar el pedido
+async function procesarPedido(pedidoForm) {
+  const empleado = document.getElementById('empleado').value.trim();
+  const cliente = document.getElementById('cliente').value.trim();
+
+  if (!empleado || !cliente) {
+    alert('Por favor completa los campos de empleado y cliente.');
+    return;
+  }
+
+  let pedidoTexto = `👩‍🍳 Empleado: ${empleado}\n👤 Cliente: ${cliente}\n`;
+  let total = 0;
+
+  // Enchiladas Verdes
+  const cantidadEnchiladasVerdes = parseInt(document.getElementById('cantidadEnchiladasVerdes').value) || 0;
+  const tipoEnchiladasVerdes = document.getElementById('tipoEnchiladasVerdes').value;
+  if (cantidadEnchiladasVerdes > 0) {
+    let subtotal = cantidadEnchiladasVerdes * 15;
+    pedidoTexto += `- ${cantidadEnchiladasVerdes} Enchiladas Verdes ${tipoEnchiladasVerdes}\n`;
+    if (tipoEnchiladasVerdes.includes('Huevo')) subtotal += 10;
+    if (tipoEnchiladasVerdes.includes('Tasajo')) subtotal += 20;
+    total += subtotal;
+  }
+
+  // Enchiladas Rojas
+  const cantidadEnchiladasRojas = parseInt(document.getElementById('cantidadEnchiladasRojas').value) || 0;
+  const tipoEnchiladasRojas = document.getElementById('tipoEnchiladasRojas').value;
+  if (cantidadEnchiladasRojas > 0) {
+    let subtotal = cantidadEnchiladasRojas * 15;
+    pedidoTexto += `- ${cantidadEnchiladasRojas} Enchiladas Rojas ${tipoEnchiladasRojas}\n`;
+    if (tipoEnchiladasRojas.includes('Huevo')) subtotal += 10;
+    if (tipoEnchiladasRojas.includes('Tasajo')) subtotal += 20;
+    total += subtotal;
+  }
+
+  // Tacos Dorados
+  const cantidadTacos = parseInt(document.getElementById('cantidadTacos').value) || 0;
+  const acompanamientoTacos = document.getElementById('acompanamientoTacos').value;
+  if (cantidadTacos > 0) {
+    let subtotal = 0;
+    pedidoTexto += `- ${cantidadTacos} Tacos Dorados ${acompanamientoTacos}\n`;
+    if (acompanamientoTacos.includes('Sopa') || acompanamientoTacos.includes('Consomé')) {
+      subtotal += 20;
+    }
+    total += subtotal;
+  }
+
+  // Gorditas
+  const cantidadGorditas = parseInt(document.getElementById('cantidadGorditas').value) || 0;
+  const rellenoGorditas = document.getElementById('rellenoGorditas').value.trim();
+  if (cantidadGorditas > 0) {
+    pedidoTexto += `- ${cantidadGorditas} Gorditas (${rellenoGorditas})\n`;
+    total += cantidadGorditas * 15;
+  }
+
+  // Entomatadas
+  const cantidadEntomatadas = parseInt(document.getElementById('cantidadEntomatadas').value) || 0;
+  const tipoEntomatadas = document.getElementById('tipoEntomatadas').value;
+  if (cantidadEntomatadas > 0) {
+    let subtotal = cantidadEntomatadas * 15;
+    pedidoTexto += `- ${cantidadEntomatadas} Entomatadas ${tipoEntomatadas}\n`;
+    if (tipoEntomatadas.includes('Huevo')) subtotal += 10;
+    if (tipoEntomatadas.includes('Tasajo')) subtotal += 20;
+    total += subtotal;
+  }
+
+  // Enfrijoladas
+  const cantidadEnfrijoladas = parseInt(document.getElementById('cantidadEnfrijoladas').value) || 0;
+  const tipoEnfrijoladas = document.getElementById('tipoEnfrijoladas').value;
+  if (cantidadEnfrijoladas > 0) {
+    let subtotal = cantidadEnfrijoladas * 15;
+    pedidoTexto += `- ${cantidadEnfrijoladas} Enfrijoladas ${tipoEnfrijoladas}\n`;
+    if (tipoEnfrijoladas.includes('Huevo')) subtotal += 10;
+    if (tipoEnfrijoladas.includes('Tasajo')) subtotal += 20;
+    total += subtotal;
+  }
+
+  // Aguas
+  const cantidadAguaLitro = parseInt(document.getElementById('cantidadAguaLitro').value) || 0;
+  const cantidadAguaMedio = parseInt(document.getElementById('cantidadAguaMedio').value) || 0;
+  if (cantidadAguaLitro > 0) {
+    pedidoTexto += `- ${cantidadAguaLitro} Agua(s) de 1L\n`;
+    total += cantidadAguaLitro * 30;
+  }
+  if (cantidadAguaMedio > 0) {
+    pedidoTexto += `- ${cantidadAguaMedio} Agua(s) de 1/2L\n`;
+    total += cantidadAguaMedio * 20;
+  }
+
+  // Guisado
+  const nombreGuisado = document.getElementById('nombreGuisado').value.trim();
+  const precioGuisado = parseInt(document.getElementById('precioGuisado').value) || 0;
+  if (nombreGuisado && precioGuisado > 0) {
+    pedidoTexto += `- Guisado: ${nombreGuisado} ($${precioGuisado})\n`;
+    total += precioGuisado;
+  }
+
+  // Extras
+  const pedidoExtra = document.getElementById('pedidoExtra').value.trim();
+  if (pedidoExtra) {
+    pedidoTexto += `📝 Notas: ${pedidoExtra}\n`;
+  }
+
+  pedidoTexto += `💵 Total Aproximado: $${total}`;
+
+  await guardarPedido(cliente, pedidoTexto, total);
+  pedidoForm.reset();
+  alert('✅ Pedido enviado');
 }

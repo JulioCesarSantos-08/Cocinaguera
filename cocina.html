@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <title>Pedidos en Cocina - Cocina de la Güera</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="imagenes/logo.png">
 
   <!-- Firebase versión de compatibilidad -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  
+
   <!-- Tu script personalizado -->
   <script src="script.js" defer></script>
 </head>
@@ -25,7 +26,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Verificar que haya sesión iniciada
+    // Verificar sesión iniciada
     if (localStorage.getItem('logueado') !== 'true') {
       window.location.href = 'login.html';
     }
@@ -37,24 +38,33 @@
     db.collection("pedidos").orderBy("timestamp").onSnapshot((querySnapshot) => {
       listaPedidos.innerHTML = "";
 
+      let numeroPedido = 1; // <- empieza a contar pedidos
+
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const div = document.createElement('div');
         div.classList.add('pedido');
 
         div.innerHTML = `
-          <p><strong>Mesa:</strong> ${data.mesa}</p>
-          <p><strong>Pedido:</strong> ${data.pedido}</p>
+          <h2>🧾 Pedido #${numeroPedido}</h2>
+          <p><strong>Cliente:</strong> ${data.mesa}</p>
+          <p><strong>Pedido:</strong><br>${data.pedido.replace(/\n/g, '<br>')}</p>
           <input type="number" id="precio-${doc.id}" placeholder="Precio final ($)" required><br><br>
-          <button onclick="terminarPedido('${doc.id}', '${data.mesa}', \`${data.pedido}\`)">✅ Pedido Listo</button>
+
+          <div class="botones-pedido">
+            <button onclick="terminarPedido('${doc.id}', '${data.mesa}', \`${data.pedido}\`)">✅ Pedido Listo</button>
+            <button onclick="cancelarPedido('${doc.id}')">❌ Cancelar Pedido</button>
+          </div>
           <hr>
         `;
+
         listaPedidos.appendChild(div);
+        numeroPedido++; // <- incrementa el número de pedido
       });
     });
   });
 
-  // Función para terminar pedido, moverlo a "pedidos_terminados" y eliminarlo de "pedidos"
+  // Función para terminar un pedido
   async function terminarPedido(id, mesa, pedido) {
     const precioInput = document.getElementById(`precio-${id}`);
     const precio = parseFloat(precioInput.value);
@@ -76,6 +86,15 @@
     await db.collection('pedidos').doc(id).delete();
 
     alert('Pedido terminado ✅');
+  }
+
+  // Función para cancelar un pedido
+  async function cancelarPedido(id) {
+    if (confirm('¿Seguro que quieres cancelar este pedido? ❌')) {
+      const db = firebase.firestore();
+      await db.collection('pedidos').doc(id).delete();
+      alert('Pedido cancelado ❌');
+    }
   }
 </script>
 
