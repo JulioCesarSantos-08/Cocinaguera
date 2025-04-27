@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="icon" type="image/png" href="imagenes/logo.png">
+  <link rel="icon" type="image/png" href="imagenes/logo.png">
   <meta charset="UTF-8">
   <title>Login - Cocina de la Güera</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="login-container">
+<!-- Loader -->
+<div id="loader" style="display: flex; justify-content: center; align-items: center; height: 100vh; background: white;">
+  <img src="imagenes/fondo2.png" alt="Cargando..." style="width: 150px;">
+</div>
+
+<!-- Contenedor del login -->
+<div class="login-container" style="display: none;">
   <h1>Bienvenido</h1>
   <form id="loginForm">
     <input type="text" id="usuario" placeholder="Usuario" required><br><br>
@@ -19,20 +25,28 @@
 </div>
 
 <script>
-  const loginForm = document.getElementById('loginForm');
+  document.addEventListener('DOMContentLoaded', function() {
+    // Espera 1.5 segundos y luego muestra el login
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      document.querySelector('.login-container').style.display = 'block';
+    }, 1500); // 1500ms = 1.5s
 
-  loginForm.addEventListener('submit', function(e) {
-    e.preventDefault();
+    const loginForm = document.getElementById('loginForm');
 
-    const usuario = document.getElementById('usuario').value;
-    const contrasena = document.getElementById('contrasena').value;
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
 
-    if (usuario === 'Cocinagüera2025' && contrasena === 'Enchiladas15') {
-      localStorage.setItem('logueado', 'true'); // Guardamos que ya inició sesión
-      window.location.href = 'menu.html'; // Redirigir al menú
-    } else {
-      document.getElementById('mensajeError').style.display = 'block';
-    }
+      const usuario = document.getElementById('usuario').value;
+      const contrasena = document.getElementById('contrasena').value;
+
+      if (usuario === 'Cocinagüera2025' && contrasena === 'Enchiladas15') {
+        localStorage.setItem('logueado', 'true'); // Guardamos que ya inició sesión
+        window.location.href = 'menu.html'; // Redirigir al menú
+      } else {
+        document.getElementById('mensajeError').style.display = 'block';
+      }
+    });
   });
 </script>
 

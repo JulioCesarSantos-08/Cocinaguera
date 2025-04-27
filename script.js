@@ -133,23 +133,24 @@ async function procesarPedido(pedidoForm) {
   }
 
   // Tacos Dorados
-  const cantidadTacos = parseInt(document.getElementById('cantidadTacos').value) || 0;
-  const acompanamientoTacos = document.getElementById('acompanamientoTacos').value;
-  if (cantidadTacos > 0) {
-    let subtotal = 0;
-    pedidoTexto += `- ${cantidadTacos} Tacos Dorados ${acompanamientoTacos}\n`;
-    if (acompanamientoTacos.includes('Sopa') || acompanamientoTacos.includes('Consomé')) {
-      subtotal += 20;
-    }
-    total += subtotal;
+const cantidadTacos = parseInt(document.getElementById('cantidadTacos').value) || 0;
+const acompanamientoTacos = document.getElementById('acompanamientoTacos').value;
+if (cantidadTacos > 0) {
+  let subtotal = cantidadTacos * 15;
+  pedidoTexto += `- ${cantidadTacos} Tacos Dorados ${acompanamientoTacos}\n`;
+  if (acompanamientoTacos.includes('Sopa') || acompanamientoTacos.includes('Consomé')) {
+    subtotal += 20;
   }
+  total += subtotal;
+}
+
 
   // Gorditas
   const cantidadGorditas = parseInt(document.getElementById('cantidadGorditas').value) || 0;
   const rellenoGorditas = document.getElementById('rellenoGorditas').value.trim();
   if (cantidadGorditas > 0) {
     pedidoTexto += `- ${cantidadGorditas} Gorditas (${rellenoGorditas})\n`;
-    total += cantidadGorditas * 15;
+    total += cantidadGorditas * 20;
   }
 
   // Entomatadas
@@ -189,10 +190,13 @@ async function procesarPedido(pedidoForm) {
   // Guisado
   const nombreGuisado = document.getElementById('nombreGuisado').value.trim();
   const precioGuisado = parseInt(document.getElementById('precioGuisado').value) || 0;
-  if (nombreGuisado && precioGuisado > 0) {
-    pedidoTexto += `- Guisado: ${nombreGuisado} ($${precioGuisado})\n`;
-    total += precioGuisado;
-  }
+  const cantidadGuisado = parseInt(document.getElementById('cantidadGuisado').value) || 0;
+  
+  if (nombreGuisado && precioGuisado > 0 && cantidadGuisado > 0) {
+    const subtotalGuisado = precioGuisado * cantidadGuisado;
+    pedidoTexto += `- ${cantidadGuisado} Guisado(s) de ${nombreGuisado} ($${precioGuisado} c/u)\n`;
+    total += subtotalGuisado;
+  }  
 
   // Extras
   const pedidoExtra = document.getElementById('pedidoExtra').value.trim();

@@ -221,3 +221,62 @@ button:hover {
   flex-direction: column;
   align-items: center;
 }
+
+@media (max-width: 600px) {
+  body {
+    margin: 5px;
+    padding: 0;
+    background-color: #f7f7f7;
+  }
+
+  form, 
+  #listaPedidos div, 
+  #listaPedidosTerminados div, 
+  .login-container,
+  .menu-opciones {
+    width: 95%;
+    margin: 10px auto;
+    padding: 20px;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    font-size: 18px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  button {
+    width: 100%;
+    font-size: 20px;
+    padding: 16px;
+  }
+
+  .menu-opciones button {
+    width: 100%;
+    font-size: 20px;
+    padding: 16px;
+  }
+
+  h1, h2 {
+    font-size: 26px;
+    text-align: center;
+  }
+
+  #listaPedidos p,
+  #listaPedidosTerminados p {
+    font-size: 20px;
+  }
+
+  .boton-flotante {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .menu-fondo {
+    background-size: contain;
+    background-position: top center;
+    background-repeat: no-repeat;
+    padding: 15px;
+  }
+}
