@@ -46,7 +46,9 @@ button:hover {
 }
 
 /* Lista de pedidos */
-#listaPedidos div {
+#listaPedidos div,
+#listaPedidosTerminados div,
+#listaVentas div {
   background: white;
   padding: 20px;
   margin: 10px auto;
@@ -55,39 +57,29 @@ button:hover {
   max-width: 600px;
 }
 
-#listaPedidos p {
+#listaPedidos p,
+#listaPedidosTerminados p,
+#listaVentas p {
   margin: 8px 0;
   font-size: 18px;
   color: #555;
 }
 
-#listaPedidos button {
+#listaPedidos button,
+#listaPedidosTerminados button,
+#listaVentas button {
   margin-top: 10px;
   background-color: #007bff;
 }
 
-#listaPedidos button:hover {
+#listaPedidos button:hover,
+#listaPedidosTerminados button:hover,
+#listaVentas button:hover {
   background-color: #0056b3;
 }
 
-/* Pedidos Terminados */
-#listaPedidosTerminados div {
-  background: white;
-  padding: 20px;
-  margin: 10px auto;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
-  max-width: 600px;
-}
-
-#listaPedidosTerminados p {
-  margin: 8px 0;
-  font-size: 18px;
-  color: #333;
-}
-
 /* Total ventas */
-#totalVentas {
+#totalVenta, #totalVentas {
   text-align: center;
   margin-top: 20px;
   font-size: 24px;
@@ -107,26 +99,27 @@ button:hover {
   background-color: #28a745;
   color: white;
   border: none;
-  padding: 14px 22px;
+  padding: 16px 24px;
   border-radius: 50px;
-  font-size: 18px;
+  font-size: 20px;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  transition: background-color 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .boton-flotante button:hover {
   background-color: #218838;
+  transform: scale(1.05);
 }
 
-/* Botones especiales */
-#eliminarVentasButton {
+/* Botón eliminar todo */
+.eliminar-todo {
+  background-color: #dc3545;
   margin: 20px auto;
   display: block;
-  background-color: #dc3545;
 }
 
-#eliminarVentasButton:hover {
+.eliminar-todo:hover {
   background-color: #c82333;
 }
 
@@ -164,65 +157,6 @@ button:hover {
 
 /* Responsive para celulares */
 @media (max-width: 600px) {
-  form, #listaPedidos div, #listaPedidosTerminados div, .login-container {
-    margin: 10px;
-    width: 90%;
-    padding: 15px;
-  }
-
-  button {
-    font-size: 16px;
-    padding: 10px;
-  }
-
-  .boton-flotante {
-    right: 10px;
-    bottom: 10px;
-  }
-}
-
-.pedido-card {
-  border: 2px solid #ccc;
-  padding: 15px;
-  margin: 10px;
-  border-radius: 12px;
-  background-color: #f9f9f9;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-}
-h2 {
-  color: #333;
-}
-pre {
-  background-color: #eee;
-  padding: 10px;
-  border-radius: 8px;
-  white-space: pre-wrap;
-}
-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  margin-top: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-button:hover {
-  background-color: #45a049;
-}
-
-.menu-fondo {
-  background-image: url('imagenes/fondocasa.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-@media (max-width: 600px) {
   body {
     margin: 5px;
     padding: 0;
@@ -232,6 +166,7 @@ button:hover {
   form, 
   #listaPedidos div, 
   #listaPedidosTerminados div, 
+  #listaVentas div, 
   .login-container,
   .menu-opciones {
     width: 95%;
@@ -264,7 +199,8 @@ button:hover {
   }
 
   #listaPedidos p,
-  #listaPedidosTerminados p {
+  #listaPedidosTerminados p,
+  #listaVentas p {
     font-size: 20px;
   }
 
@@ -273,10 +209,20 @@ button:hover {
     bottom: 10px;
   }
 
-  .menu-fondo {
-    background-size: contain;
-    background-position: top center;
-    background-repeat: no-repeat;
-    padding: 15px;
+  .boton-flotante button {
+    padding: 20px 26px;
+    font-size: 22px;
   }
+}
+
+/* Fondo menú */
+.menu-fondo {
+  background-image: url('imagenes/fondocasa.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

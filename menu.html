@@ -3,36 +3,86 @@
 <head>
   <link rel="icon" type="image/png" href="imagenes/logo.png">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsivo -->
   <title>Menú Principal - Cocina de la Güera</title>
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Solo agrego estilos extra aquí temporalmente, luego puedes moverlos a tu style.css si quieres */
+
+    .menu-container {
+      background: white;
+      padding: 30px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .menu-container h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .menu-opciones button {
+      width: 100%;
+      padding: 14px 20px;
+      margin: 10px 0;
+      font-size: 18px;
+      background-color: #ff9800;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .menu-opciones button:hover {
+      background-color: #e68900;
+    }
+
+    @media (max-width: 500px) {
+      .menu-container {
+        margin: 10px;
+        padding: 20px;
+      }
+      .menu-container h1 {
+        font-size: 24px;
+      }
+      .menu-opciones button {
+        font-size: 16px;
+        padding: 12px 16px;
+      }
+    }
+  </style>
 </head>
-<body>
 
 <body class="menu-fondo">
-<div class="menu-container">
-  <h1>Menú Principal</h1>
-  <div class="menu-opciones">
-  <button onclick="irAPagina('index.html')">🍽️ Realizar Pedido</button><br><br>
-  <button onclick="irAPagina('cocina.html')">👨‍🍳 Ver Pedidos en Cocina</button><br><br>
-  <button onclick="irAPagina('pedidos-terminados.html')">📈 Ventas de Hoy</button><br><br>
-  <button onclick="cerrarSesion()">🔒 Cerrar Sesión</button>
-</div>
+  <div class="menu-container">
+    <h1>Menú Principal</h1>
+    <div class="menu-opciones">
+      <button onclick="irAPagina('index.html')">🍽️ Realizar Pedido</button>
+      <button onclick="irAPagina('cocina.html')">👨‍🍳 Ver Pedidos en Cocina</button>
+      <button onclick="irAPagina('pedidos-terminados.html')">📈 Ventas de Hoy</button>
+      <button onclick="cerrarSesion()">🔒 Cerrar Sesión</button>
+    </div>
+  </div>
 
-<script>
-  // Comprobar si está logueado
-  if (localStorage.getItem('logueado') !== 'true') {
-    window.location.href = 'login.html'; // Si no está logueado, regresar al login
-  }
+  <script>
+    // Comprobar si está logueado
+    if (localStorage.getItem('logueado') !== 'true') {
+      window.location.href = 'login.html'; // Si no está logueado, regresar al login
+    }
 
-  function irAPagina(pagina) {
-    window.location.href = pagina;
-  }
+    function irAPagina(pagina) {
+      window.location.href = pagina;
+    }
 
-  function cerrarSesion() {
-    localStorage.removeItem('logueado'); // Eliminar la sesión
-    window.location.href = 'login.html'; // Regresar al login
-  }
-</script>
-
+    function cerrarSesion() {
+      localStorage.removeItem('logueado'); // Eliminar la sesión
+      window.location.href = 'login.html'; // Regresar al login
+    }
+  </script>
 </body>
 </html>

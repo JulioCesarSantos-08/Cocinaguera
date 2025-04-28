@@ -2,16 +2,19 @@
 <html lang="es">
 <head>
     <link rel="icon" type="image/png" href="imagenes/logo.png">
-  <meta charset="UTF-8">
-  <title>Ventas del Día - Cocina de la Güera</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Ventas del Día - Cocina de la Güera</title>
+    <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase versión de compatibilidad -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Firebase versión de compatibilidad -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-  <!-- Tu script personalizado -->
-  <script src="script.js" defer></script>
+    <!-- Librería jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Tu script personalizado -->
+    <script src="script.js" defer></script>
 </head>
 
 <body>
@@ -21,8 +24,11 @@
 
 <h2 id="totalVenta">Total: $0</h2>
 
-<!-- Botón para eliminar todas las ventas -->
-<button onclick="eliminarTodasLasVentas()" class="eliminar-todo">🗑️ Eliminar Todo</button>
+<!-- Botones de acción -->
+<div class="botones-acciones">
+  <button onclick="generarPDF()" class="generar-pdf">📄 Guardar PDF</button>
+  <button onclick="eliminarTodasLasVentas()" class="eliminar-todo">🗑️ Eliminar Todo</button>
+</div>
 
 <!-- Botón flotante para regresar al menú -->
 <div class="boton-flotante">
@@ -30,6 +36,8 @@
 </div>
 
 <script>
+  let ventasData = [];
+
   document.addEventListener('DOMContentLoaded', function() {
     // Verificar sesión iniciada
     if (localStorage.getItem('logueado') !== 'true') {
@@ -43,6 +51,7 @@
 
     db.collection("pedidos_terminados").orderBy("timestamp").onSnapshot((querySnapshot) => {
       listaVentas.innerHTML = "";
+      ventasData = []; // Reiniciar datos del PDF
       let total = 0;
 
       querySnapshot.forEach((doc) => {
@@ -59,11 +68,52 @@
         listaVentas.appendChild(div);
 
         total += data.precio;
+
+        // Guardar cada venta para el PDF
+        ventasData.push({
+          mesa: data.mesa,
+          pedido: data.pedido,
+          precio: data.precio
+        });
       });
 
       totalVenta.textContent = `Total: $${total.toFixed(2)}`;
     });
   });
+
+  // Función para generar el PDF
+  function generarPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text('Ventas del Día - Cocina de la Güera', 10, 10);
+    doc.setFontSize(12);
+
+    let y = 20;
+    ventasData.forEach((venta, index) => {
+      doc.text(`Mesa: ${venta.mesa}`, 10, y);
+      y += 6;
+      doc.text(`Pedido: ${venta.pedido}`, 10, y);
+      y += 6;
+      doc.text(`Precio: $${venta.precio.toFixed(2)}`, 10, y);
+      y += 10;
+
+      if (y > 270) { // Salto de página si se llena
+        doc.addPage();
+        y = 20;
+      }
+    });
+
+    const totalText = document.getElementById('totalVenta').textContent;
+    doc.setFontSize(14);
+    doc.text(totalText, 10, y + 10);
+
+    const fecha = new Date();
+    const nombreArchivo = `ventas_${fecha.getFullYear()}-${fecha.getMonth()+1}-${fecha.getDate()}.pdf`;
+
+    doc.save(nombreArchivo);
+  }
 
   // Función para eliminar todas las ventas
   async function eliminarTodasLasVentas() {
