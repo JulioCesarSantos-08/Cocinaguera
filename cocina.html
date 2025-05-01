@@ -71,7 +71,7 @@
     const precio = parseFloat(precioInput.value);
 
     if (isNaN(precio) || precio <= 0) {
-      alert('Por favor ingresa EL PRECIO FINAL PARA EL PEDIDO.');
+      alert('Para poder enviar coloca EL PRECIO FINAL PARA EL PEDIDO.');
       return;
     }
 
@@ -91,7 +91,7 @@
 
   // Función para cancelar un pedido
   async function cancelarPedido(id) {
-    if (confirm('¿Seguro que quieres cancelar este pedido? ❌')) {
+    if (confirm('¿Seguro que quieres cancelar este pedido? (se eliminara) ❌')) {
       const db = firebase.firestore();
       await db.collection('pedidos').doc(id).delete();
       alert('Pedido cancelado ❌');
